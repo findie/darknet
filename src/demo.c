@@ -131,7 +131,7 @@ void *detect_in_thread(void *ptr)
 //    printf("\033[1;1H");
 //    printf("\nFPS:%.1f\n",fps);
 //    printf("Objects:\n\n");
-    printf("Frame: %d\n", frame_no++);
+    printf("Frame: %d @%.2ffps\n", frame_no++, fps);
     image display = buff[(buff_index+2) % 3];
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
     free_detections(dets, nboxes);
