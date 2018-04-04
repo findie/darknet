@@ -36,6 +36,8 @@ static int demo_done = 0;
 static int demo_total = 0;
 double demo_time;
 
+int frame_no = 0;
+
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
 int size_network(network *net)
@@ -125,10 +127,11 @@ void *detect_in_thread(void *ptr)
 
     if (nms > 0) do_nms_obj(dets, nboxes, l.classes, nms);
 
-    printf("\033[2J");
-    printf("\033[1;1H");
-    printf("\nFPS:%.1f\n",fps);
-    printf("Objects:\n\n");
+//    printf("\033[2J");
+//    printf("\033[1;1H");
+//    printf("\nFPS:%.1f\n",fps);
+//    printf("Objects:\n\n");
+    printf("Frame: %d\n", frame_no++);
     image display = buff[(buff_index+2) % 3];
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
     free_detections(dets, nboxes);
