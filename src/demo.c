@@ -238,15 +238,15 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     ipl = cvCreateImage(cvSize(buff[0].w,buff[0].h), IPL_DEPTH_8U, buff[0].c);
 
     int count = 0;
-    if(!prefix){
-        cvNamedWindow("Demo", CV_WINDOW_NORMAL); 
-        if(fullscreen){
-            cvSetWindowProperty("Demo", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-        } else {
-            cvMoveWindow("Demo", 0, 0);
-            cvResizeWindow("Demo", 1352, 1013);
-        }
-    }
+//    if(!prefix){
+//        cvNamedWindow("Demo", CV_WINDOW_NORMAL);
+//        if(fullscreen){
+//            cvSetWindowProperty("Demo", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+//        } else {
+//            cvMoveWindow("Demo", 0, 0);
+//            cvResizeWindow("Demo", 1352, 1013);
+//        }
+//    }
 
     demo_time = what_time_is_it_now();
 
