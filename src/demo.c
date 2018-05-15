@@ -37,6 +37,7 @@ static int demo_total = 0;
 double demo_time;
 
 int frame_no = 0;
+float end_at = INFINITY;
 
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
@@ -143,6 +144,12 @@ void *detect_in_thread(void *ptr)
 
 void *fetch_in_thread(void *ptr)
 {
+	float ms = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC) / 1000;
+//	printf("is %f > %f\n", ms, end_at);
+	if(ms > end_at) {
+	    demo_done = 1;
+	    return 0;
+	}
     int status = fill_image_from_stream(cap, buff[buff_index]);
     letterbox_image_into(buff[buff_index], net->w, net->h, buff_letter[buff_index]);
     if(status == 0) demo_done = 1;
@@ -185,7 +192,7 @@ void *detect_loop(void *ptr)
     }
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -213,6 +220,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     if(filename){
         printf("video file: %s\n", filename);
         cap = cvCaptureFromFile(filename);
+        cvSetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC, video_start * 1000);
+//        printf("setting video_end: %f\n", video_end);
+        end_at = video_end;
     }else{
         cap = cvCaptureFromCAM(cam_index);
 
@@ -359,7 +369,7 @@ pthread_join(detect_thread, 0);
 }
 */
 #else
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end)
 {
     fprintf(stderr, "Demo needs OpenCV for webcam images.\n");
 }
