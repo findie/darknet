@@ -32,9 +32,9 @@ extern int gpu_index;
     #endif
 #endif
 
-
+#ifdef __cplusplus
 extern "C" {
-
+#endif
 
 typedef struct{
     int classes;
@@ -757,10 +757,9 @@ void do_nms_sort(detection *dets, int total, int classes, float thresh);
 
 matrix make_matrix(int rows, int cols);
 
-
+#ifdef __cplusplus
 }
-
-
+#endif
 
 #ifndef __cplusplus
 #ifdef OPENCV
