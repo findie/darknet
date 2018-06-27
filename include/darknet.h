@@ -757,10 +757,6 @@ void do_nms_sort(detection *dets, int total, int classes, float thresh);
 
 matrix make_matrix(int rows, int cols);
 
-#ifdef __cplusplus
-}
-#endif
-
 #ifndef __cplusplus
 #ifdef OPENCV
 image get_image_from_stream(CvCapture *cap);
@@ -805,4 +801,8 @@ size_t rand_size_t();
 float rand_normal();
 float rand_uniform(float min, float max);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
