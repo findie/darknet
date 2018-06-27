@@ -32,6 +32,10 @@ extern int gpu_index;
     #endif
 #endif
 
+
+extern "C" {
+
+
 typedef struct{
     int classes;
     char **names;
@@ -752,6 +756,11 @@ void do_nms_obj(detection *dets, int total, int classes, float thresh);
 void do_nms_sort(detection *dets, int total, int classes, float thresh);
 
 matrix make_matrix(int rows, int cols);
+
+
+}
+
+
 
 #ifndef __cplusplus
 #ifdef OPENCV
