@@ -801,8 +801,8 @@ size_t rand_size_t();
 float rand_normal();
 float rand_uniform(float min, float max);
 
-#endif
-
 #ifdef __cplusplus
 }
+#endif
+
 #endif
