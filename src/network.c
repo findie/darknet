@@ -612,7 +612,7 @@ void network_remember_output(network *net, float* output)
 }
 void network_remember_memory(network *net, float** memory, int index)
 {
-    network_remember_output(net, memory[i]);
+    network_remember_output(net, memory[index]);
 }
 
 detection *network_avg_predictions(network *net, int net_size,
