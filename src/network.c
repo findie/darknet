@@ -587,6 +587,60 @@ float *network_predict_image(network *net, image im)
 
 int network_width(network *net){return net->w;}
 int network_height(network *net){return net->h;}
+int network_output_size(network *net){
+    int i;
+    int count = 0;
+    for(i = 0; i < net->n; ++i){
+        layer l = net->layers[i];
+        if(l.type == YOLO || l.type == REGION || l.type == DETECTION){
+            count += l.outputs;
+        }
+    }
+    return count;
+}
+void network_remember_output(network *net, float* output)
+{
+    int i;
+    int count = 0;
+    for(i = 0; i < net->n; ++i){
+        layer l = net->layers[i];
+        if(l.type == YOLO || l.type == REGION || l.type == DETECTION){
+            memcpy(output + count, net->layers[i].output, sizeof(float) * l.outputs);
+            count += l.outputs;
+        }
+    }
+}
+
+detection *network_avg_predictions(network *net, int net_size,
+                                   float **predictions, int avg_count,
+                                   int *nboxes,
+                                   int w, int h,
+                                   float thresh, float hier)
+{
+    int i, j;
+    int count = 0;
+
+    // todo how much faster is it to pass an already existing pointer and 0 it?
+    float *avg = calloc(net_size, sizeof(float));
+
+    // no need to fill with 0 since we calloc
+    // fill_cpu(net_size, 0, avg, 1);
+    for(j = 0; j < avg_count; ++j){
+        axpy_cpu(net_size, 1./avg_count, predictions[j], 1, avg, 1);
+    }
+    for(i = 0; i < net->n; ++i){
+        layer l = net->layers[i];
+        if(l.type == YOLO || l.type == REGION || l.type == DETECTION){
+            memcpy(l.output, avg + count, sizeof(float) * l.outputs);
+            count += l.outputs;
+        }
+    }
+    detection *dets = get_network_boxes(net, w, h, thresh, hier, 0, 1, nboxes);
+
+    free(avg);
+
+    return dets;
+}
 
 matrix network_predict_data_multi(network *net, data test, int n)
 {
