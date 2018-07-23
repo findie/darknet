@@ -743,6 +743,7 @@ int network_width(network *net);
 int network_height(network *net);
 int network_output_size(network *net);
 void network_remember_output(network *net, float* output);
+void network_remember_memory(network *net, float** memory, int index);
 detection *network_avg_predictions(network *net, int net_size,
 																	 float **predictions, int avg_count,
 																	 int *nboxes,
