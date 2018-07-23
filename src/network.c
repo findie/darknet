@@ -642,6 +642,20 @@ detection *network_avg_predictions(network *net, int net_size,
     return dets;
 }
 
+float **network_memory_make(int size, int netSize) {
+    float **memory = malloc(size * sizeof(float*));
+    for(int i = 0; i < size; i++){
+        memory[i] = calloc(netSize, sizeof(float));
+    }
+    return memory;
+}
+void network_memory_free(float **memory, int size) {
+    for(int i = 0; i < size; i++){
+        free(memory[i]);
+    }
+    free(memory);
+}
+
 matrix network_predict_data_multi(network *net, data test, int n)
 {
     int i,j,b,m;

@@ -748,6 +748,8 @@ detection *network_avg_predictions(network *net, int net_size,
 																	 int *nboxes,
 																	 int w, int h,
 																	 float thresh, float hier);
+float **network_memory_make(int size, int netSize);
+void network_memory_free(float **memory, int size);
 
 float *network_predict_image(network *net, image im);
 void network_detect(network *net, image im, float thresh, float hier_thresh, float nms, detection *dets);
