@@ -33,6 +33,10 @@ extern int gpu_index;
     #endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct{
     int classes;
     char **names;
@@ -589,16 +593,16 @@ load_args get_base_args(network *net);
 
 void free_data(data d);
 
-typedef struct node{
+typedef struct dn_node{
     void *val;
-    struct node *next;
-    struct node *prev;
-} node;
+    struct dn_node *next;
+    struct dn_node *prev;
+} dn_node;
 
 typedef struct list{
     int size;
-    node *front;
-    node *back;
+    dn_node *front;
+    dn_node *back;
 } list;
 
 pthread_t load_data(load_args args);
@@ -808,5 +812,9 @@ int *read_intlist(char *s, int *n, int d);
 size_t rand_size_t();
 float rand_normal();
 float rand_uniform(float min, float max);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
