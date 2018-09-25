@@ -133,7 +133,10 @@ void *detect_in_thread(void *ptr)
 //    printf("\033[1;1H");
 //    printf("\nFPS:%.1f\n",fps);
 //    printf("Objects:\n\n");
-    printf("Frame: %d @%.2ffps\n", frame_no++, fps);
+
+		// -2 offset for buff && buff_letter since we read 2 frames in advance
+		float current_frame_index = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES) - 2;
+    printf("Frame: %d @%.2ffps idx: %.0f\n", frame_no++, fps, current_frame_index);
     image display = buff[(buff_index+2) % 3];
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
     free_detections(dets, nboxes);
