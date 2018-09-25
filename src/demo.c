@@ -38,6 +38,7 @@ double demo_time;
 
 int frame_no = 0;
 float end_at = INFINITY;
+float end_at_index = INFINITY;
 
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
@@ -144,12 +145,13 @@ void *detect_in_thread(void *ptr)
 
 void *fetch_in_thread(void *ptr)
 {
-	float ms = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC) / 1000;
-//	printf("is %f > %f\n", ms, end_at);
-	if(ms > end_at) {
-	    demo_done = 1;
-	    return 0;
-	}
+    float ms = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC) / 1000;
+    float idx = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
+    //	printf("is %f > %f\n", ms, end_at);
+    if(ms > end_at || idx > end_at_index) {
+        demo_done = 1;
+        return 0;
+    }
     int status = fill_image_from_stream(cap, buff[buff_index]);
     letterbox_image_into(buff[buff_index], net->w, net->h, buff_letter[buff_index]);
     if(status == 0) demo_done = 1;
@@ -192,7 +194,7 @@ void *detect_loop(void *ptr)
     }
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end, float video_start_index, float video_end_index)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -220,9 +222,22 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     if(filename){
         printf("video file: %s\n", filename);
         cap = cvCaptureFromFile(filename);
-        cvSetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC, video_start * 1000);
+        if(video_start >= 0){
+        		// grab a frame due to a VFR bug where if you seek too far off, you break the capture
+        	  cvQueryFrame(cap);
+
+//          printf("seeking to second %f\n", video_start);
+        	  cvSetCaptureProperty(cap, CV_CAP_PROP_POS_MSEC, video_start * 1000);
+				}else if(video_start_index >= 0){
+        		// grab a frame due to a VFR bug where if you seek too far off, you break the capture
+            cvQueryFrame(cap);
+
+//          printf("seeking to index %f\n", video_start_index);
+        	  cvSetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES, video_start_index);
+        }
 //        printf("setting video_end: %f\n", video_end);
         end_at = video_end;
+        end_at_index = video_end_index;
     }else{
         cap = cvCaptureFromCAM(cam_index);
 
@@ -338,7 +353,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
 
    int count = 0;
    if(!prefix){
-   cvNamedWindow("Demo", CV_WINDOW_NORMAL); 
+   cvNamedWindow("Demo", CV_WINDOW_NORMAL);
    if(fullscreen){
    cvSetWindowProperty("Demo", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
    } else {
@@ -369,7 +384,7 @@ pthread_join(detect_thread, 0);
 }
 */
 #else
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, float video_start, float video_end, float video_start_index, float video_end_index)
 {
     fprintf(stderr, "Demo needs OpenCV for webcam images.\n");
 }
