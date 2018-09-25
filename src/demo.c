@@ -37,6 +37,7 @@ static int demo_total = 0;
 double demo_time;
 
 int frame_no = 0;
+int frame_index_start_at = 0;
 float end_at = INFINITY;
 float end_at_index = INFINITY;
 
@@ -139,8 +140,10 @@ void *detect_in_thread(void *ptr)
 //    printf("Objects:\n\n");
 
 		// -demo_frame+1 offset for buff && buff_letter since we read 2 frames in advance
-		float current_frame_index = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES) - demo_frame+1;
-    printf("Frame: %d @%.2ffps idx: %.0f\n", frame_no++, fps, current_frame_index);
+		float current_frame_index = frame_index_start_at + frame_no;
+    printf("Frame: %d idx: %.0f @%.2ffps\n", frame_no, current_frame_index, fps);
+		frame_no++;
+
     image display = buff[(buff_index+2) % 3];
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
     free_detections(dets, nboxes);
@@ -245,6 +248,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
 //        printf("setting video_end: %f\n", video_end);
         end_at = video_end;
         end_at_index = video_end_index;
+        frame_index_start_at = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
     }else{
         cap = cvCaptureFromCAM(cam_index);
 
