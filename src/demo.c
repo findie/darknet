@@ -73,8 +73,12 @@ detection *avg_predictions(network *net, int *nboxes)
     int i, j;
     int count = 0;
     fill_cpu(demo_total, 0, avg, 1);
-    for(j = 0; j < demo_frame; ++j){
-        axpy_cpu(demo_total, 1./demo_frame, predictions[j], 1, avg, 1);
+
+    // fix for first 2 frames not having detections because of garbage data in buffers
+    int cnts = demo_frame > frame_no + 1 ? frame_no + 1 : demo_frame;
+
+    for(j = 0; j < cnts; ++j){
+        axpy_cpu(demo_total, 1./cnts, predictions[j], 1, avg, 1);
     }
     for(i = 0; i < net->n; ++i){
         layer l = net->layers[i];
@@ -134,8 +138,8 @@ void *detect_in_thread(void *ptr)
 //    printf("\nFPS:%.1f\n",fps);
 //    printf("Objects:\n\n");
 
-		// -2 offset for buff && buff_letter since we read 2 frames in advance
-		float current_frame_index = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES) - 2;
+		// -demo_frame+1 offset for buff && buff_letter since we read 2 frames in advance
+		float current_frame_index = cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES) - demo_frame+1;
     printf("Frame: %d @%.2ffps idx: %.0f\n", frame_no++, fps, current_frame_index);
     image display = buff[(buff_index+2) % 3];
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
