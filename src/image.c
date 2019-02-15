@@ -620,6 +620,27 @@ void ipl_into_image(IplImage* src, image im)
     }
 }
 
+image bgr_to_image(int w, int h, int c, unsigned char* data)
+{
+  image out = make_empty_image(w,h,c);
+  out.data = malloc(w*h*c*sizeof(float));
+
+  int step = w*c;
+  int i, j, k;
+  float mult = 1/255.;
+
+  for(i = 0; i < h; ++i){
+      for(k= 0; k < c; ++k){
+          for(j = 0; j < w; ++j){
+//              im.data[k*w*h + i*w + j] = data[i*step + j*c + k]/255.;
+              out.data[k*w*h + i*w + j] = data[i*step + j*c + k] * mult;
+          }
+      }
+  }
+
+  return out;
+}
+
 image ipl_to_image(IplImage* src)
 {
     int h = src->height;

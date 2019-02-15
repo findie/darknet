@@ -723,6 +723,7 @@ layer get_network_output_layer(network *net);
 void top_predictions(network *net, int n, int *index);
 void flip_image(image a);
 image float_to_image(int w, int h, int c, float *data);
+image bgr_to_image(int w, int h, int c, unsigned char *data);
 void ghost_image(image source, image dest, int dx, int dy);
 float network_accuracy(network *net, data d);
 void random_distort_image(image im, float hue, float saturation, float exposure);
